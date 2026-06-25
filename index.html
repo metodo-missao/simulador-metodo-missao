@@ -331,9 +331,9 @@
 
     </div>
 
-    <!-- Lógica de Controle de Clique em Cascata -->
-    <script>
-            // 1. Controle Avançado de Clique em Cascata (Correção do Bug do 1º Clique)
+    <!-- Lógica de Controle de Clique em Cascata e Blindagem Red Team -->
+<script>
+    // 1. Controle Avançado de Clique em Cascata (Correção do Bug do 1º Clique)
     document.getElementById('btn-gabarita').addEventListener('click', function() {
         var menuMaterias = document.getElementById('menu-materias');
         var menuPenal = document.getElementById('menu-aulas-penal');
@@ -357,7 +357,7 @@
         }
     });
 
-        // 2. PROTOCOLO RED TEAM: PROTEÇÃO INTEGRAL DA ÁRVORE DE LINKS (BLINDAGEM ADICIONAL 2026)
+    // 2. PROTOCOLO RED TEAM: PROTEÇÃO INTEGRAL DA ÁRVORE DE LINKS (BLINDAGEM ADICIONAL 2026)
     document.addEventListener('contextmenu', function(e) {
         e.preventDefault();
     });
@@ -370,7 +370,7 @@
         if (e.ctrlKey && (e.key === 's' || e.key === 'S')) { e.preventDefault(); return false; }
         if (e.ctrlKey && (e.key === 'c' || e.key === 'C')) { e.preventDefault(); return false; }
         
-        // Intercepta a tecla Print Screen individual e limpa a área de transferência
+        // Intercepta o clique no Print Screen e limpa a área de transferência
         if (e.key === 'PrintScreen') {
             e.preventDefault();
             navigator.clipboard.writeText("Conteúdo Protegido por Direitos Autorais - Método Missão 2026");
@@ -379,22 +379,17 @@
         }
     });
 
-    // Se o usuário acionar ferramentas de recorte ou perder o foco do site, borra o container do simulador
+    // 3. CORREÇÃO GLOBAL DO EFEITO BLUR (Alvo alterado para o BODY)
     window.addEventListener('blur', function() {
-        const containerSimulador = document.getElementById('simulador-container');
-        if (containerSimulador) {
-            containerSimulador.style.filter = 'blur(15px)';
-        }
+        document.body.style.filter = 'blur(20px)';
+        document.body.style.transition = 'filter 0.2s ease'; // Adiciona uma transição suave profissional
     });
 
-    // Quando o aluno retornar o foco para o site, as questões voltam ao normal
     window.addEventListener('focus', function() {
-        const containerSimulador = document.getElementById('simulador-container');
-        if (containerSimulador) {
-            containerSimulador.style.filter = 'none';
-        }
+        document.body.style.filter = 'none';
     });
 
+    // 4. TRAVA DE SELEÇÃO DE TEXTO CSS
     const estiloAntiSelecao = document.createElement('style');
     estiloAntiSelecao.innerHTML = `
         body, .link-item, .aula-item, .titulo-secao, .tagline {
@@ -405,7 +400,6 @@
         }
     `;
     document.head.appendChild(estiloAntiSelecao);
-
 </script>
 
 </body>
