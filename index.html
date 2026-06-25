@@ -379,16 +379,6 @@
         }
     });
 
-    // 3. CORREÇÃO GLOBAL DO EFEITO BLUR (Alvo alterado para o BODY)
-    window.addEventListener('blur', function() {
-        document.body.style.filter = 'blur(20px)';
-        document.body.style.transition = 'filter 0.2s ease'; // Adiciona uma transição suave profissional
-    });
-
-    window.addEventListener('focus', function() {
-        document.body.style.filter = 'none';
-    });
-
     // 4. TRAVA DE SELEÇÃO DE TEXTO CSS
     const estiloAntiSelecao = document.createElement('style');
     estiloAntiSelecao.innerHTML = `
