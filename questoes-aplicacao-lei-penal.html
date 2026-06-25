@@ -196,76 +196,94 @@
 </div>
 
 <script>
+
         // Função principal que lê a lista e renderiza o seu layout idêntico na tela
-            function renderizarSimulador(listaQuestoes) {
-        const container = document.getElementById('simulador-container');
-        container.innerHTML = '';
+function renderizarSimulador(listaQuestoes) {
+    const container = document.getElementById('simulador-container');
+    container.innerHTML = '';
+    
+    listaQuestoes.forEach((q, qIndex) => {
+        const bloco = document.createElement('div');
+        bloco.className = 'questao-bloco';
+        bloco.id = `bloco-q${qIndex}`;
         
-        listaQuestoes.forEach((q, qIndex) => {
-            const bloco = document.createElement('div');
-            bloco.className = 'questao-bloco';
-            bloco.id = `bloco-q${qIndex}`;
-            
-            let alternativasHTML = '';
-            q.alternativas.forEach((alt, altIndex) => {
-                alternativasHTML += `<label class="opcao" id="q${qIndex}-opt${altIndex}"><input type="radio" name="radar-q${qIndex}" value="${altIndex}">${alt}</label>`;
-            });
-            
-            bloco.innerHTML = `
-                <div class="questao-texto-bloco">
-                    <span class="questao-titulo-inline">${q.titulo}</span>
-                    <br>
-                    ${q.enunciado}
-                </div>
-                
-                <div class="assinatura-suave">
-                    MÉTODO MISSÃO • GABARITA AÍ • METODOMISSAO.COM
-                </div>
-                
-                <div class="opcoes-container" id="grupo-q${qIndex}">
-                    ${alternativasHTML}
-                </div>
-                
-                <button type="button" class="btn-verificar" id="btn-q${qIndex}" onclick="validarResposta(${qIndex}, ${q.correta})">
-                    CONFIRMAR
-                </button>
-                
-                <div class="feedback-box" id="feed-q${qIndex}">
-                    <div class="status-alerta" id="status-q${qIndex}"></div>
-                    <div class="gabarito-letra">Gabarito: ${q.letraGabarito}</div>
-                    <div style="line-height: 1.6; color: #a5b1c2;">${q.explicacao}</div>
-                </div>
-            `;
-            
-            container.appendChild(bloco);
+        let alternativasHTML = '';
+        q.alternativas.forEach((alt, altIndex) => {
+            alternativasHTML += `<label class="opcao" id="q${qIndex}-opt${altIndex}"><input type="radio" name="radar-q${qIndex}" value="${altIndex}">${alt}</label>`;
         });
-    }
+        
+        // ALTERAÇÃO CRÍTICA: Passamos q.letraGabarito no onclick em vez do índice numérico instável
+        bloco.innerHTML = `
+            <div class="questao-texto-bloco">
+                <span class="questao-titulo-inline">${q.titulo}</span>
+                <br>
+                ${q.enunciado}
+            </div>
+            
+            <div class="assinatura-suave">
+                MÉTODO MISSÃO • GABARITA AÍ • METODOMISSAO.COM
+            </div>
+            
+            <div class="opcoes-container" id="grupo-q${qIndex}">
+                ${alternativasHTML}
+            </div>
+            
+            <button type="button" class="btn-verificar" id="btn-q${qIndex}" onclick="validarResposta(${qIndex}, '${q.letraGabarito.trim().toUpperCase()}')">
+                CONFIRMAR
+            </button>
+            
+            <div class="feedback-box" id="feed-q${qIndex}">
+                <div class="status-alerta" id="status-q${qIndex}"></div>
+                <div class="gabarito-letra">Gabarito: ${q.letraGabarito}</div>
+                <div style="line-height: 1.6; color: #a5b1c2;">${q.explicacao}</div>
+            </div>
+        `;
+        
+        container.appendChild(bloco);
+    });
+}
 
-
-    function validarResposta(qIndex, indexCorreto) {
-        const inputs = document.getElementsByName(`radar-q${qIndex}`);
-        let selecionadoIndex = -1;
-        for (let i = 0; i < inputs.length; i++) { if (inputs[i].checked) { selecionadoIndex = i; break; } }
-        if (selecionadoIndex === -1) { alert("Por favor, selecione uma alternativa antes de confirmar!"); return; }
-        document.getElementById(`grupo-q${qIndex}`).classList.add('travado');
-        document.getElementById(`btn-q${qIndex}`).style.display = 'none';
-        const elementoCorreto = document.getElementById(`q${qIndex}-opt${indexCorreto}`);
-        const elementoSelecionado = document.getElementById(`q${qIndex}-opt${selecionadoIndex}`);
-        const statusBox = document.getElementById(`status-q${qIndex}`);
-        const feedbackBox = document.getElementById(`feed-q${qIndex}`);
-        if (selecionadoIndex === indexCorreto) {
-            elementoCorreto.style.borderColor = '#2ecc71';
-            statusBox.innerHTML = "✅ Certo!";
-            statusBox.className = "status-alerta status-acertou";
-        } else {
-            elementoSelecionado.style.borderColor = '#ff4d4d';
-            elementoCorreto.style.borderColor = '#2ecc71';
-            feedbackBox.style.borderLeftColor = '#ff4d4d';
-            statusBox.innerHTML = "❌ Errada!";
-            statusBox.className = "status-alerta status-errou";
-        }
-        feedbackBox.style.display = 'block';
+function validarResposta(qIndex, letraCorreta) {
+    const inputs = document.getElementsByName(`radar-q${qIndex}`);
+    let selecionadoIndex = -1;
+    for (let i = 0; i < inputs.length; i++) { 
+        if (inputs[i].checked) { 
+            selecionadoIndex = i; 
+            break; 
+        } 
     }
+    
+    if (selecionadoIndex === -1) { 
+        alert("Por favor, selecione uma alternativa antes de confirmar!"); 
+        return; 
+    }
+    
+    document.getElementById(`grupo-q${qIndex}`).classList.add('travado');
+    document.getElementById(`btn-q${qIndex}`).style.display = 'none';
+    
+    // MAPEAMENTO BLINDADO: Converte a letra do gabarito (A, B, C, D, E) no índice real do array (0, 1, 2, 3, 4)
+    const deLetraParaIndex = { 'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4 };
+    const indexCorretoReal = deLetraParaIndex[letraCorreta];
+    
+    const elementoCorreto = document.getElementById(`q${qIndex}-opt${indexCorretoReal}`);
+    const elementoSelecionado = document.getElementById(`q${qIndex}-opt${selecionadoIndex}`);
+    const statusBox = document.getElementById(`status-q${qIndex}`);
+    const feedbackBox = document.getElementById(`feed-q${qIndex}`);
+    
+    // A validação agora compara o clique do aluno com o índice real derivado da LETRA
+    if (selecionadoIndex === indexCorretoReal) {
+        elementoCorreto.style.borderColor = '#2ecc71';
+        statusBox.innerHTML = "✅ Certo!";
+        statusBox.className = "status-alerta status-acertou";
+    } else {
+        elementoSelecionado.style.borderColor = '#ff4d4d';
+        elementoCorreto.style.borderColor = '#2ecc71';
+        feedbackBox.style.borderLeftColor = '#ff4d4d';
+        statusBox.innerHTML = "❌ Errada!";
+        statusBox.className = "status-alerta status-errou";
+    }
+    feedbackBox.style.display = 'block';
+}
 
 
     // =========================================================================
